@@ -1,0 +1,104 @@
+.upload-panel {
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-primary);
+  overflow: hidden;
+  min-height: 0;
+  flex: 1;
+}
+
+.upload-panel__zone-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Upload Zone */
+.upload-zone {
+  position: relative;
+  background: var(--color-bg-tertiary);
+  border: 2px dashed var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm);
+  flex: 1;
+  min-height: 0;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.upload-zone:hover,
+.upload-zone--active {
+  border-color: var(--color-primary);
+  background: var(--color-bg-hover);
+}
+
+/* Empty state */
+.upload-zone__empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  padding: var(--space-lg);
+}
+
+.upload-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--color-bg-hover);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-md);
+  color: var(--color-primary);
+}
+
+.upload-zone__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-xs);
+  color: var(--color-text-primary);
+}
+
+.upload-zone__subtitle {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+/* Loading Overlay */
+.upload-zone__loading {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  border-radius: var(--radius-lg);
+  z-index: 10;
+}
+
+.upload-zone__loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--color-border-default);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.upload-zone__loading-text {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+}

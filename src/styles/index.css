@@ -1,0 +1,11 @@
+/* Core styles */
+@import './variables.css';
+@import './reset.css';
+@import './base.css';
+@import './layout.css';
+
+/* Component styles */
+@import '../components/header/header.css';
+@import '../components/upload-panel/upload-panel.css';
+@import '../components/layers-panel/layers-panel.css';
+@import '../components/shared/shared.css';
