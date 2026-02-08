@@ -10,6 +10,7 @@ let header: ReturnType<typeof createHeader> | null = null;
 let uploadPanel: ReturnType<typeof createUploadPanel> | null = null;
 let layersPanel: ReturnType<typeof createLayersPanel> | null = null;
 let currentLayers: ExtractedLayer[] = [];
+let currentComposite: HTMLCanvasElement | null = null;
 
 function getApp(): HTMLElement {
   const app = document.getElementById('app');
@@ -28,6 +29,7 @@ function showUploadView() {
   header?.unmount();
   header = null;
   currentLayers = [];
+  currentComposite = null;
 
   // Mount header
   header = createHeader({ container: app });
@@ -51,7 +53,9 @@ async function handleFile(file: File) {
 
   try {
     const buffer = await file.arrayBuffer();
-    currentLayers = parsePsd(buffer);
+    const result = parsePsd(buffer);
+    currentLayers = result.layers;
+    currentComposite = result.composite;
     showLayersView(file.name);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to parse PSD file.';
@@ -81,6 +85,7 @@ function showLayersView(fileName: string) {
     container: mainContainer,
     layers: currentLayers,
     fileName,
+    composite: currentComposite,
     onReset: showUploadView,
   });
   layersPanel.mount();

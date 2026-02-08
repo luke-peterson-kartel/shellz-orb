@@ -10,6 +10,39 @@ export interface ExtractedLayer {
   hidden: boolean;
 }
 
+export interface ParsedPsd {
+  layers: ExtractedLayer[];
+  composite: HTMLCanvasElement | null;
+}
+
+function buildComposite(width: number, height: number, children: Layer[]): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d')!;
+
+  function drawLayers(layers: Layer[], parentHidden: boolean) {
+    for (const layer of layers) {
+      const isHidden = parentHidden || (layer.hidden ?? false);
+
+      if (layer.children && layer.children.length > 0) {
+        drawLayers(layer.children, isHidden);
+      } else if (layer.canvas && !isHidden) {
+        ctx.globalAlpha = layer.opacity ?? 1;
+        ctx.drawImage(
+          layer.canvas as HTMLCanvasElement,
+          layer.left ?? 0,
+          layer.top ?? 0,
+        );
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  drawLayers(children, false);
+  return canvas;
+}
+
 function flattenLayers(layers: Layer[], parentPath: string, parentHidden: boolean): ExtractedLayer[] {
   const result: ExtractedLayer[] = [];
 
@@ -28,7 +61,7 @@ function flattenLayers(layers: Layer[], parentPath: string, parentHidden: boolea
         canvas: layer.canvas as HTMLCanvasElement,
         width: layer.canvas.width,
         height: layer.canvas.height,
-        opacity: layer.opacity ?? 255,
+        opacity: layer.opacity ?? 1,
         hidden: isHidden,
       });
     } else {
@@ -39,7 +72,7 @@ function flattenLayers(layers: Layer[], parentPath: string, parentHidden: boolea
   return result;
 }
 
-export function parsePsd(buffer: ArrayBuffer): ExtractedLayer[] {
+export function parsePsd(buffer: ArrayBuffer): ParsedPsd {
   const psd = readPsd(buffer, { skipLayerImageData: false });
 
   if (!psd.children || psd.children.length === 0) {
@@ -52,5 +85,8 @@ export function parsePsd(buffer: ArrayBuffer): ExtractedLayer[] {
     throw new Error('No extractable image layers found in this PSD file.');
   }
 
-  return layers;
+  return {
+    layers,
+    composite: buildComposite(psd.width, psd.height, psd.children),
+  };
 }

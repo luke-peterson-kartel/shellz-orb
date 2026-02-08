@@ -33,13 +33,24 @@ export async function downloadLayer(
   saveAs(blob, `${safeName}.${format === 'jpeg' ? 'jpg' : 'png'}`);
 }
 
+export interface ZipMetadata {
+  title: string;
+  description: string;
+}
+
 export async function downloadAllAsZip(
   layers: Array<{ name: string; canvas: HTMLCanvasElement }>,
+  metadata?: ZipMetadata,
   onProgress?: (percent: number) => void
 ): Promise<void> {
   const zip = new JSZip();
   const pngFolder = zip.folder('png')!;
   const jpegFolder = zip.folder('jpeg')!;
+
+  if (metadata) {
+    const info = `Title: ${metadata.title}\nDescription: ${metadata.description}\n`;
+    zip.file('metadata.txt', info);
+  }
 
   for (let i = 0; i < layers.length; i++) {
     const { name, canvas } = layers[i];
@@ -56,6 +67,7 @@ export async function downloadAllAsZip(
     onProgress?.(Math.round(((i + 1) / layers.length) * 100));
   }
 
+  const zipName = metadata?.title ? `${sanitizeName(metadata.title)}.zip` : 'psd-layers.zip';
   const zipBlob = await zip.generateAsync({ type: 'blob' });
-  saveAs(zipBlob, 'psd-layers.zip');
+  saveAs(zipBlob, zipName);
 }
